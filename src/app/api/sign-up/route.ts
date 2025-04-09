@@ -29,6 +29,7 @@ export async function POST(request: Request) {
 
     if (existingUserByEmail) {
       if (existingUserByEmail.isVerified) {
+        //verified hai
         return Response.json(
           {
             success: false,
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       } else {
+        //verify nahi hua hai
         const hashedPassword = await bcrypt.hash(password, 10);
         existingUserByEmail.password = hashedPassword;
         existingUserByEmail.verifyCode = verifyCode;
@@ -44,10 +46,12 @@ export async function POST(request: Request) {
         await existingUserByEmail.save();
       }
     } else {
+      //user pahli bar aya hai
       const hashedPassword = await bcrypt.hash(password, 10);
       const expiryDate = new Date();
       expiryDate.setHours(expiryDate.getHours() + 1);
 
+      //save user in database
       const newUser = new UserModel({
         username,
         email,
